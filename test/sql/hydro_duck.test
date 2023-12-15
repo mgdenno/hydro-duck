@@ -1,0 +1,23 @@
+# name: test/sql/hydro_duck.test
+# description: test hydro_duck extension
+# group: [hydro_duck]
+
+# Before we load the extension, this will fail
+statement error
+SELECT hydro_duck('Sam');
+----
+Catalog Error: Scalar Function with name hydro_duck does not exist!
+
+# Require statement will ensure this test is run with this extension loaded
+require hydro_duck
+
+# Confirm the extension works
+query I
+SELECT hydro_duck('Sam');
+----
+HydroDuck Sam 🐥
+
+query I
+SELECT hydro_duck_openssl_version('Michael');
+----
+<REGEX>:HydroDuck Michael, my linked OpenSSL version is OpenSSL.*
