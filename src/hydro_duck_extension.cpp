@@ -12,6 +12,8 @@
 #include "duckdb/function/aggregate_function.hpp"
 #include "duckdb/function/function.hpp"
 
+#include "functions/functions.hpp"
+
 
 namespace duckdb {
 
@@ -32,7 +34,16 @@ static void LoadInternal(DatabaseInstance &instance) {
 
 void HydroDuckExtension::Load(DuckDB &db) {
 	LoadInternal(*db.instance);
+
+  Connection con(db);
+  con.BeginTransaction();
+  auto &catalog = Catalog::GetSystemCatalog(*con.context);
+  hydro_duck::FirstScrooge::RegisterFunction(con, catalog);
+  hydro_duck::NashSutcliffe::RegisterFunction(con, catalog);
+  // hydro_duck::Aliases::Register(con, catalog);
+  con.Commit();
 }
+
 std::string HydroDuckExtension::Name() {
 	return "hydro_duck";
 }
